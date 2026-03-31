@@ -104,6 +104,9 @@ const schedules = {
   ]
 };
 
+// Birinchi yuklanish ekanligini aniqlash (SCROLL MUAMMOSINI TUZATISH UCHUN)
+let isPageLoaded = false;
+
 // Fanlarning kalitlarini olish (rang berish uchun)
 function getLessonKey(lesson) {
   const lessonKeys = {
@@ -224,8 +227,10 @@ function showSchedule(classType) {
   
   container.innerHTML = tableHTML;
   
-  // Smooth scroll
-  container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // ⭐ MUHIM: Faqat sahifa to'liq yuklangandan KEYIN skroll qilsin (birinchi yuklashda emas)
+  if (isPageLoaded) {
+    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 // ============================================
@@ -242,7 +247,6 @@ if (searchInput) {
     const projectCards = document.querySelectorAll('.project-card');
     const aboutText = document.querySelectorAll('.about p');
     const contactInfo = document.querySelectorAll('.contact-info li');
-    const scheduleCells = document.querySelectorAll('.schedule-table td');
     
     // Yangiliklar kartalarini qidirish
     newsCards.forEach(card => {
@@ -332,6 +336,10 @@ document.addEventListener('DOMContentLoaded', function() {
     defaultButton.classList.add('active');
   }
   
-  // 5-sinf jadvalini yuklash
+  // 5-sinf jadvalini yuklash (birinchi yuklash, skroll qilmaydi)
   showSchedule('5');
+  
+  // ⭐ Sahifa to'liq yuklangandan keyin skroll qilishga ruxsat beramiz
+  // Bunda hech qanday kechikish (setTimeout) YO'Q
+  isPageLoaded = true;
 });
