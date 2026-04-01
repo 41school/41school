@@ -330,16 +330,20 @@ if (toggleButton) {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
-  // 5-sinf tugmasiga active class qo'shish
-  const defaultButton = document.querySelector('.class-btn[data-class="5"]');
-  if (defaultButton) {
-    defaultButton.classList.add('active');
+  // schedule-container elementi borligini tekshirish (faqat index.html da bor)
+  const scheduleContainer = document.getElementById('schedule-container');
+  
+  if (scheduleContainer) {
+    // 5-sinf tugmasiga active class qo'shish
+    const defaultButton = document.querySelector('.class-btn[data-class="5"]');
+    if (defaultButton) {
+      defaultButton.classList.add('active');
+    }
+    
+    // 5-sinf jadvalini yuklash
+    showSchedule('5');
+    
+    // Birinchi yuklash tugadi, endi tugmalar bosilganda skroll qilsin
+    isFirstLoad = false;
   }
-  
-  // 5-sinf jadvalini yuklash (birinchi yuklash, skroll qilmaydi)
-  showSchedule('5');
-  
-  // ⭐ Sahifa to'liq yuklangandan keyin skroll qilishga ruxsat beramiz
-  // Bunda hech qanday kechikish (setTimeout) YO'Q
-  isPageLoaded = true;
 });
