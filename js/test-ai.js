@@ -1,10 +1,15 @@
 // ============================================
-// TEST-AI.JS - AI ORQALI TEST YARATISH
+// TEST-AI.JS - GROQ API (TEZ) ORQALI TEST YARATISH
 // ============================================
 
-// Mistral Large API kaliti
-const MISTRAL_API_KEY = "MffyThVd0tlVsFjBOBHZs09gKufuyU9w";
-const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
+// Groq API kalitlari (sizda bor)
+const GROQ_API_KEYS = [
+    "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",
+    "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",
+    "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",
+    "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"
+];
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 // Sinf va fanlar ro'yxati
 const SINFLAR = ["5", "6a", "6b", "7a", "7b", "8a", "8b", "9a", "9b", "10a"];
@@ -21,23 +26,15 @@ const FANLAR = [
   { nom: "tabiiy-fan", ozbekcha: "Tabiiy fan", icon: "🌿" }
 ];
 
-// Qiyinlik koeffitsientlari (GLOBAL - test.js da ham ishlatiladi)
+// Qiyinlik koeffitsientlari (GLOBAL)
 window.QIYINLIK_KOEFF = {
-  "5": 1.0,
-  "6a": 1.2,
-  "6b": 1.2,
-  "7a": 1.5,
-  "7b": 1.5,
-  "8a": 1.8,
-  "8b": 1.8,
-  "9a": 2.0,
-  "9b": 2.0,
-  "10a": 2.2
+  "5": 1.0, "6a": 1.2, "6b": 1.2, "7a": 1.5, "7b": 1.5,
+  "8a": 1.8, "8b": 1.8, "9a": 2.0, "9b": 2.0, "10a": 2.2
 };
 
-// Har bir sinf+fan uchun o'tiladigan mavzular
+// Har bir sinf+fan uchun mavzular
 const MAVZULAR = {
-  "5_matematika": ["Sonlar", "Qo'shish", "Ayirish", "Ko'paytirish", "Bo'lish", "Kasrlar"],
+  "5_matematika": ["Sonlar", "Qo'shish", "Ayirish", "Ko'paytirish", "Bo'lish"],
   "5_ona-tili": ["Alifbo", "Harflar", "So'zlar", "Gap", "Tinish belgilari"],
   "5_rus-tili": ["Алфавит", "Буквы", "Слова", "Предложения"],
   "5_tabiiy-fan": ["Tirik organizmlar", "O'simliklar", "Hayvonlar", "Suv", "Havo"],
@@ -78,8 +75,36 @@ const MAVZULAR = {
 };
 
 // ============================================
-// AI TEST GENERATOR CLASS
+// GROQ API ORQALI TEST YARATISH
 // ============================================
+
+async function callGroqAPI(messages) {
+  for (const key of GROQ_API_KEYS) {
+    try {
+      const response = await fetch(GROQ_API_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: messages,
+          temperature: 0.7,
+          max_tokens: 4096
+        })
+      });
+      
+      if (response.status === 200) {
+        const data = await response.json();
+        return data.choices[0].message.content;
+      }
+    } catch(e) {
+      console.warn("Groq API xatosi, keyingi kalit sinab ko'riladi");
+    }
+  }
+  throw new Error("Barcha Groq kalitlari ishlamadi");
+}
 
 class AITestGenerator {
   
@@ -97,42 +122,30 @@ Test haqida:
 - Fan: ${fanNomi}
 - 20 ta savol, har biri 2 ball
 - Mavzular: ${mavzular.join(", ")}
+- Har bir savol 4 variantli (A, B, C, D) bo'lsin
 
-JAVOB FORMATI (faqat JSON):
+JAVOB FORMATI (faqat JSON qaytar, boshqa matn yo'q):
 {
   "savollar": [
     {
       "savol": "Savol matni",
-      "variantlar": ["A", "B", "C", "D"],
+      "variantlar": ["A variant", "B variant", "C variant", "D variant"],
       "togri": 0,
       "ball": 2
     }
   ]
-}`;
+}
+
+To'g'ri javob indeksi 0-3 oralig'ida (0=A, 1=B, 2=C, 3=D)`;
 
     try {
-      const response = await fetch(MISTRAL_API_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${MISTRAL_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "mistral-large-2411",
-          messages: [
-            { role: "system", content: "Siz o'zbek tilida test tuzuvchi AIsiz. Faqat JSON formatda javob qaytaring." },
-            { role: "user", content: prompt }
-          ],
-          temperature: 0.7,
-          max_tokens: 4096
-        })
-      });
-
-      if (!response.ok) throw new Error(`API xatosi: ${response.status}`);
-      const data = await response.json();
-      let content = data.choices[0].message.content;
-      content = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-      const parsed = JSON.parse(content);
+      const content = await callGroqAPI([
+        { role: "system", content: "Siz o'zbek tilida test tuzuvchi AIsiz. Faqat JSON formatda javob qaytaring." },
+        { role: "user", content: prompt }
+      ]);
+      
+      let cleanContent = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const parsed = JSON.parse(cleanContent);
       
       return {
         id: `${sinf}_${fan}_${testNumber.toString().padStart(3, "0")}`,
@@ -160,7 +173,7 @@ JAVOB FORMATI (faqat JSON):
       try {
         if (typeof db !== 'undefined' && db.db) await db.addTest(test);
       } catch (err) {}
-      if (i % 10 === 0) await this.sleep(1000);
+      if (i % 5 === 0) await this.sleep(500);
     }
     return tests;
   }
@@ -195,35 +208,54 @@ JAVOB FORMATI (faqat JSON):
   async getAllTestsForSubject(sinf, fan) {
     if (typeof db === 'undefined' || !db.db) return [];
     const store = db.db.transaction("tests", "readonly").objectStore("tests");
-    const index = store.index("sinf_fan");
-    return new Promise((resolve) => {
-      const request = index.getAll([sinf, fan]);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => resolve([]);
+    const allTests = await new Promise(resolve => {
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve([]);
     });
+    return allTests.filter(t => t.sinf === sinf && t.fan === fan);
   }
   
   async getActiveTests(sinf, fan) {
     const allTests = await this.getAllTestsForSubject(sinf, fan);
-    return allTests.filter(t => t.aktiv === true).slice(0, 30);
+    return allTests.filter(t => t.aktiv === true).slice(0, 20); // 20 ta faol test
   }
   
-  async randomizeActiveTests(sinf, fan) {
+  async randomizeActiveTests(sinf, fan, activeCount = 20) {
     const allTests = await this.getAllTestsForSubject(sinf, fan);
     if (allTests.length === 0) return [];
+    
+    // Avval barcha testlarni faol emas qilish
+    for (let test of allTests) {
+      test.aktiv = false;
+      if (typeof db !== 'undefined' && db.db) {
+        const store = db.db.transaction("tests", "readwrite").objectStore("tests");
+        await new Promise(resolve => {
+          const req = store.put(test);
+          req.onsuccess = () => resolve();
+        });
+      }
+    }
+    
+    // Random 20 ta testni tanlash
     const shuffled = [...allTests];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    const selectedTests = shuffled.slice(0, 30);
+    
+    const selectedTests = shuffled.slice(0, activeCount);
     for (let test of selectedTests) {
       test.aktiv = true;
       if (typeof db !== 'undefined' && db.db) {
         const store = db.db.transaction("tests", "readwrite").objectStore("tests");
-        store.put(test);
+        await new Promise(resolve => {
+          const req = store.put(test);
+          req.onsuccess = () => resolve();
+        });
       }
     }
+    
     return selectedTests;
   }
 }
@@ -238,49 +270,27 @@ class KombinatsionTestGenerator {
   
   async createKombinatsionTest(sinf, testNumber = 1) {
     const qiyinlikKoeff = window.QIYINLIK_KOEFF[sinf] || 1.0;
-    const sinfKey = sinf.replace(/[a-z]/g, '');
-    
-    const fanlar = FANLAR.filter(f => {
-      if (sinf === "5") return ["matematika", "ona-tili", "rus-tili", "tabiiy-fan", "tarix"].includes(f.nom);
-      if (sinf === "6a" || sinf === "6b") return ["matematika", "ona-tili", "rus-tili", "tabiiy-fan", "tarix", "geografiya"].includes(f.nom);
-      return true;
-    });
     
     const prompt = `Siz 41-maktab o'quvchilari uchun KOMBINATSION TEST tuzuvchi AIsiz.
 Sinf: ${sinf}
-Fanlar: ${fanlar.map(f => f.ozbekcha).join(", ")}
-20 ta savol, har bir fan dan 2-3 savol, har biri 2 ball.
+20 ta savol, har bir savol 4 variantli, har biri 2 ball.
+Barcha fanlardan aralash savollar bo'lsin.
 
 JAVOB FORMATI (faqat JSON):
 {
   "savollar": [
-    {"savol": "...", "variantlar": ["A","B","C","D"], "togri": 0, "ball": 2, "fan": "matematika"}
+    {"savol": "...", "variantlar": ["A","B","C","D"], "togri": 0, "ball": 2}
   ]
 }`;
 
     try {
-      const response = await fetch(MISTRAL_API_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${MISTRAL_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "mistral-large-2411",
-          messages: [
-            { role: "system", content: "Siz o'zbek tilida test tuzuvchi AIsiz. Faqat JSON formatda javob qaytaring." },
-            { role: "user", content: prompt }
-          ],
-          temperature: 0.7,
-          max_tokens: 4096
-        })
-      });
+      const content = await callGroqAPI([
+        { role: "system", content: "Siz o'zbek tilida test tuzuvchi AIsiz. Faqat JSON formatda javob qaytaring." },
+        { role: "user", content: prompt }
+      ]);
       
-      if (!response.ok) throw new Error(`API xatosi: ${response.status}`);
-      const data = await response.json();
-      let content = data.choices[0].message.content;
-      content = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-      const parsed = JSON.parse(content);
+      let cleanContent = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const parsed = JSON.parse(cleanContent);
       
       return {
         id: `kombinatsion_${sinf}_${testNumber.toString().padStart(3, "0")}`,
@@ -301,15 +311,12 @@ JAVOB FORMATI (faqat JSON):
   
   createFallbackKombinatsionTest(sinf) {
     const questions = [];
-    const fanlar = ["Matematika", "Ona tili", "Rus tili", "Tarix", "Geografiya"];
     for (let i = 0; i < 20; i++) {
-      const fan = fanlar[i % fanlar.length];
       questions.push({
-        savol: `${fan} fanidan ${i+1}-savol`,
+        savol: `Kombinatsion test ${i+1}-savol`,
         variantlar: ["A variant", "B variant", "C variant", "D variant"],
         togri: 0,
-        ball: 2,
-        fan: fan.toLowerCase().replace(" ", "-")
+        ball: 2
       });
     }
     return {
@@ -328,40 +335,6 @@ JAVOB FORMATI (faqat JSON):
 
 const kombinatsionGenerator = new KombinatsionTestGenerator();
 
-// ============================================
-// YORDAMCHI FUNKSIYALAR
-// ============================================
-
-async function generateAllTestsForSchool(onProgress) {
-  const total = SINFLAR.length * FANLAR.length;
-  let completed = 0;
-  for (const sinf of SINFLAR) {
-    for (const fan of FANLAR) {
-      if (sinf === "5" && !["matematika", "ona-tili", "rus-tili", "tabiiy-fan", "tarix"].includes(fan.nom)) {
-        completed++;
-        continue;
-      }
-      if (onProgress) onProgress(completed, total, `${sinf} - ${fan.ozbekcha}`);
-      const existingTests = await aiTestGenerator.getAllTestsForSubject(sinf, fan.nom);
-      if (existingTests.length === 0) {
-        await aiTestGenerator.createMultipleTests(sinf, fan.nom, 200);
-      }
-      completed++;
-    }
-  }
-  return { success: true, message: "Barcha testlar yaratildi!" };
-}
-
-async function generateKombinatsionTestsForAllSinf(onProgress) {
-  const sinflar = ["5", "6a", "6b", "7a", "7b", "8a", "8b", "9a", "9b", "10a"];
-  for (let i = 0; i < sinflar.length; i++) {
-    if (onProgress) onProgress(i + 1, sinflar.length, `${sinflar[i]}-sinf`);
-    const test = await kombinatsionGenerator.createKombinatsionTest(sinflar[i]);
-    if (typeof db !== 'undefined' && db.db) await db.addTest(test);
-  }
-  return { success: true, message: "Barcha kombinatsion testlar yaratildi!" };
-}
-
-console.log("✅ AI Test Generator yuklandi");
+console.log("✅ AI Test Generator (Groq API) yuklandi");
 console.log("📚 Sinf va fanlar:", SINFLAR.length, "sinf,", FANLAR.length, "fan");
-console.log("🤖 API: Mistral Large");
+console.log("🤖 API: Groq (Llama 3.1 8B) - TEZ");
