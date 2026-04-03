@@ -3,7 +3,7 @@
 // ============================================
 
 // Mistral Large API kaliti
-const MISTRAL_API_KEY = "vJtD1Lt8l60qRF7OSOWESe7wScLFFy4y";
+const MISTRAL_API_KEY = "MffyThVd0tlVsFjBOBHZs09gKufuyU9w";
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
 
 // Sinf va fanlar ro'yxati
