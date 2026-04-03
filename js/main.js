@@ -56,9 +56,9 @@ const schedules = {
   
   // 8-A sinf
   '8a': [
-    { day: "Dushanba", lessons: ["Kelajak soati", "Adabiyot", "Geografiya", "Jismoniy tarbiya", "Chizmachilika", "Fransuz tili"] },
+    { day: "Dushanba", lessons: ["Kelajak soati", "Adabiyot", "Geografiya", "Jismoniy tarbiya", "Chizmachilika", "Ona tili"] },
     { day: "Seshanba", lessons: ["Texnalogiya", "Jismoniy tarbiya", "O'zbekiston tarixi", "Fizika", "Biologiya", "Fransuz tili"] },
-    { day: "Chorshanba", lessons: ["Ona tili", "Rus tili", "Huquq", "Algebra", "Ona tili", "Geometriya"] },
+    { day: "Chorshanba", lessons: ["Fransuz tili", "Rus tili", "Huquq", "Algebra", "Ona tili", "Geometriya"] },
     { day: "Payshanba", lessons: ["Ona tili", "Uz tarix", "Rus tili", "Kimyo", "Fransuz tili", "Jahon tarixi"] },
     { day: "Juma", lessons: ["Adabiyot", "Iqtisodiyot", "Biologiya", "Algebra", "Geometriya"] },
     { day: "Shanba", lessons: ["Tarbiya", "Kimyo", "Fizika", "Informatika", "Algebra"] }
