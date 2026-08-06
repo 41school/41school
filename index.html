@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>41-Maktab | Bosh sahifa</title>
     <link rel="icon" type="image/png" href="images/logo.png">
     <link rel="manifest" href="manifest.json">
@@ -56,6 +56,13 @@
             
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-bounce: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+            --gradient-gold: linear-gradient(135deg, #fbbf24, #f59e0b);
+
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
         }
         
         /* ===== DARK MODE ===== */
@@ -147,20 +154,23 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 0;
+            padding: calc(14px + var(--safe-top)) var(--safe-right) 14px var(--safe-left);
             gap: 20px;
+            flex-wrap: nowrap;
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: clamp(8px, 2.5vw, 14px);
+            min-width: 0;
             cursor: pointer;
         }
         
         .logo img {
-            width: 50px;
-            height: 50px;
+            width: clamp(38px, 9vw, 50px);
+            height: clamp(38px, 9vw, 50px);
+            flex-shrink: 0;
             border-radius: var(--radius-md);
             background: var(--gradient-primary);
             padding: 6px;
@@ -173,8 +183,9 @@
         }
         
         .brand h1 {
-            font-size: 24px;
+            font-size: clamp(17px, 4.2vw, 24px);
             font-weight: 700;
+            white-space: nowrap;
             background: linear-gradient(135deg, #6366f1, #ec4899, #06b6d4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -183,11 +194,12 @@
         }
         
         .brand p {
-            font-size: 11px;
+            font-size: clamp(9px, 2.4vw, 11px);
             font-weight: 500;
             color: var(--gray-500);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
+            white-space: nowrap;
         }
         
         /* Navigatsiya */
@@ -237,12 +249,12 @@
             color: var(--white);
         }
         
-        body.dark .nav ul li a { color: var(--gray-300); }
+        body.dark .nav ul li a { color: var(--gray-700); }
         body.dark .nav ul li a:hover,
         body.dark .nav ul li a.active { color: white; }
         
         /* Dark mode tugmasi */
-        .nav-tools { display: flex; align-items: center; gap: 12px; }
+        .nav-tools { display: flex; align-items: center; gap: clamp(6px, 2vw, 12px); flex-shrink: 0; }
         
         .dark-btn {
             background: var(--gradient-primary);
@@ -274,11 +286,16 @@
         .mobile-menu-btn {
             display: none;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
             gap: 5px;
             background: none;
             border: none;
             cursor: pointer;
-            padding: 8px;
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            padding: 0;
             z-index: 1001;
         }
         
@@ -391,9 +408,33 @@
             margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
+
+        .hero-year-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gradient-gold);
+            color: #4a2e02;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            margin-bottom: 16px;
+            box-shadow: 0 6px 20px -6px rgba(245, 158, 11, 0.6);
+            animation: badgePulse 2.6s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-year-badge { animation: none; }
+        }
         
         .hero-title {
-            font-size: 52px;
+            font-size: clamp(28px, 6.5vw, 52px);
             font-weight: 800;
             line-height: 1.2;
             margin-bottom: 20px;
@@ -408,7 +449,7 @@
         }
         
         .hero-description {
-            font-size: 18px;
+            font-size: clamp(15px, 2.5vw, 18px);
             opacity: 0.95;
             margin-bottom: 30px;
             line-height: 1.6;
@@ -485,39 +526,6 @@
             transform: translateY(-3px);
         }
         
-        /* ===== ABOUT SECTION ===== */
-        .about {
-            padding: 80px 0;
-            text-align: center;
-            background: var(--white);
-            transition: background var(--transition);
-        }
-        
-        .about h2 {
-            font-size: 38px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .about p {
-            max-width: 800px;
-            margin: 0 auto;
-            font-size: 18px;
-            color: var(--gray-600);
-            line-height: 1.8;
-        }
-        
-        .about strong {
-            background: linear-gradient(135deg, #6366f1, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
         /* ===== DARS JADVALI ===== */
         .schedule {
             padding: 80px 0;
@@ -531,7 +539,7 @@
         }
         
         .section-title {
-            font-size: 38px;
+            font-size: clamp(26px, 5vw, 38px);
             font-weight: 700;
             margin-bottom: 15px;
             background: linear-gradient(135deg, #6366f1, #ec4899, #06b6d4);
@@ -540,8 +548,13 @@
             background-clip: text;
         }
         
+        .title-emoji {
+            -webkit-text-fill-color: initial;
+            background: none;
+        }
+        
         .section-description {
-            font-size: 18px;
+            font-size: clamp(15px, 2.3vw, 18px);
             color: var(--gray-500);
             max-width: 600px;
             margin: 0 auto;
@@ -639,7 +652,12 @@
         body.dark .class-btn {
             background: var(--gray-200);
             border-color: var(--gray-300);
-            color: var(--gray-300);
+            color: var(--gray-700);
+        }
+        
+        body.dark .class-btn:hover {
+            color: var(--gray-800);
+            border-color: var(--primary-light);
         }
         
         body.dark .class-btn.active {
@@ -789,14 +807,14 @@
         body.dark .info-item {
             background: var(--gray-100);
             border-color: var(--gray-300);
-            color: var(--gray-300);
+            color: var(--gray-700);
         }
         
         /* ===== FOOTER ===== */
         .footer {
             background: var(--gray-900);
             color: var(--gray-400);
-            padding: 40px 0 20px;
+            padding: 40px 0 calc(20px + var(--safe-bottom));
             position: relative;
             overflow: hidden;
             transition: background var(--transition);
@@ -865,28 +883,25 @@
                 position: fixed;
                 top: 0;
                 right: -100%;
-                width: 280px;
+                width: min(280px, 80vw);
                 height: 100vh;
                 background: var(--white);
                 box-shadow: var(--shadow-2xl);
-                padding: 80px 30px 30px;
+                padding: calc(80px + var(--safe-top)) 30px 30px;
                 transition: right var(--transition);
                 z-index: 999;
             }
             
             .nav.active { right: 0; }
             
-            .nav ul { flex-direction: column; gap: 10px; }
+            .nav ul { flex-direction: column; gap: 6px; }
+            .nav ul li a { padding: 13px 18px; }
             
             .mobile-menu-btn { display: flex; }
             
-            .hero { padding: 60px 0; }
-            .hero-title { font-size: 32px; }
-            .hero-description { font-size: 16px; }
+            .hero { padding: 50px 0 60px; }
             
-            .about h2, .section-title { font-size: 28px; }
-            
-            .class-btn { padding: 10px 18px; font-size: 14px; }
+            .class-btn { padding: 10px 18px; font-size: 14px; min-height: 44px; }
             
             .schedule-table { font-size: 13px; }
             
@@ -894,12 +909,86 @@
             .footer address { text-align: center; }
         }
         
+        @media (max-width: 360px) {
+            .header-inner { flex-wrap: wrap; row-gap: 10px; }
+            .brand p { display: none; }
+        }
+
         @media (max-width: 480px) {
-            .hero-title { font-size: 26px; }
             .hero-img img { width: 200px; }
             .btn { padding: 12px 22px; font-size: 14px; }
-            .schedule-table { font-size: 12px; }
             .info-item { width: 100%; justify-content: center; }
+
+            /* Sinf tugmalarini toza 2-ustunli setkaga joylashtiramiz */
+            .class-buttons {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .class-btn {
+                width: 100%;
+                min-height: 44px;
+            }
+        }
+
+        /* ===== DARS JADVALINI KICHIK EKRANDA KARTAGA AYLANTIRISH ===== */
+        @media (max-width: 640px) {
+            .schedule-container { overflow-x: visible; box-shadow: none; }
+
+            .schedule-table { min-width: 0; border-spacing: 0 12px; }
+
+            .schedule-table thead { display: none; }
+
+            .schedule-table, 
+            .schedule-table tbody, 
+            .schedule-table tr, 
+            .schedule-table td { display: block; width: 100%; }
+
+            .schedule-table tr {
+                border-radius: var(--radius-lg);
+                overflow: hidden;
+                box-shadow: var(--shadow-md);
+            }
+
+            .schedule-table tbody tr:hover { transform: none; }
+
+            .schedule-table td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 12px 16px;
+                text-align: right;
+                white-space: normal;
+                border-radius: 0 !important;
+                border-left: none !important;
+                border-bottom: 1px solid var(--gray-200);
+            }
+
+            body.dark .schedule-table td { border-bottom-color: var(--gray-300); }
+
+            .schedule-table td:last-child { border-bottom: none; }
+
+            .schedule-table td::before {
+                content: attr(data-label);
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: var(--gray-400);
+                text-align: left;
+            }
+
+            /* Kun nomi kartaning "sarlavhasi" bo'lib turadi */
+            .schedule-table td:first-child {
+                justify-content: center;
+                background: var(--gradient-primary);
+                color: white !important;
+                font-size: 15px;
+                padding: 14px 16px;
+            }
+
+            .schedule-table td:first-child::before { content: none; }
         }
     </style>
 </head>
@@ -951,6 +1040,8 @@
         </div>
         <div class="container hero-content">
             <div class="hero-text">
+                <div class="hero-year-badge">✨ 2026/2027-o'quv yili boshlandi</div>
+                <br>
                 <span class="hero-badge">📍 Farg'ona viloyati, Bag'dod tumani</span>
                 <h1 class="hero-title">
                     41-Maktabga<br>
@@ -976,23 +1067,11 @@
         </div>
     </section>
 
-    <!-- ========== ABOUT SECTION ========== -->
-    <section class="about scroll-reveal">
-        <div class="container">
-            <h2>Biz haqimizda</h2>
-            <p>
-                41-maktab — Bag'dod tumanidagi zamonaviy ta'lim muassasasi bo'lib, 
-                o'quvchilarga yuqori sifatli bilim berishni o'z oldiga maqsad qilgan. 
-                Bizning shiorimiz: <strong>"Bilim – kelajak kaliti!"</strong>
-            </p>
-        </div>
-    </section>
-
     <!-- ========== DARS JADVALI ========== -->
     <section class="schedule scroll-reveal" id="jadval">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">📅 Dars jadvali</h2>
+                <h2 class="section-title"><span class="title-emoji">📅</span> Dars jadvali</h2>
                 <p class="section-description">Sinfingizni tanlang va haftalik dars jadvali bilan tanishing</p>
             </div>
 
@@ -1246,11 +1325,11 @@
             let rowsHtml = '';
             scheduleData.forEach(day => {
                 rowsHtml += '<tr>';
-                rowsHtml += `<td>${day.day}</td>`;
+                rowsHtml += `<td data-label="Kun">${day.day}</td>`;
                 for (let i = 0; i < maxLessons; i++) {
                     const lesson = day.lessons[i] || '—';
                     const lessonKey = getLessonKey(lesson);
-                    rowsHtml += `<td data-lesson="${lessonKey}">${lesson}</td>`;
+                    rowsHtml += `<td data-lesson="${lessonKey}" data-label="${i + 1}-dars">${lesson}</td>`;
                 }
                 rowsHtml += '</tr>';
             });
